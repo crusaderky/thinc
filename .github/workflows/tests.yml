@@ -51,7 +51,7 @@ jobs:
           python -m mypy thinc --no-implicit-reexport
 
   tests:
-    name: ${{ matrix.os }} - Python ${{ matrix.python_version }}
+    name: ${{ matrix.os }} - Python ${{ matrix.python_version }} ${{ matrix.nightly }}
     strategy:
       fail-fast: false
       matrix:
@@ -63,6 +63,11 @@ jobs:
           - windows-latest
           - windows-11-arm
         python_version: ["3.10", "3.11", "3.12", "3.13"]
+        nightly: [""]  # Use only official releases
+        include:
+          - os: ubuntu-latest
+            python_version: "3.13"
+            nightly: "nightly"  # Use nightly wheels and git tips
         exclude:
           - os: windows-11-arm
             python_version: "3.10"
@@ -83,8 +88,28 @@ jobs:
       - name: Install build dependencies
         run: python -m pip install --upgrade build pip wheel
 
+      - name: Install nightly build dependencies
+        if: matrix.nightly == 'nightly'
+        run: |
+          pip install --upgrade --pre --extra-index-url https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/ numpy blis
+
+          # Install dependencies for --no-isolation
+          pip install setuptools \
+            "cython>=3.0,<4.0" \
+            "cymem>=2.0.2,<3" \
+            "murmurhash>=1.0.2,<2"
+
+          # TODO this won't be necessary long term after release 3.0.13
+          # (replace with "preshed>=3.0.2,<3.1.0" above)
+          pip install git+https://github.com/explosion/preshed.git@v3.0.x
+
       - name: Build sdist and wheel
+        if: matrix.nightly == ''
         run: python -m build
+
+      - name: Build sdist and wheel (no build isolation)
+        if: matrix.nightly == 'nightly'
+        run: python -m build --no-isolation
 
       - name: Delete source directory
         run: rm -rf thinc
@@ -108,6 +133,35 @@ jobs:
 
       - name: Install notebook test requirements
         run: python -m ipykernel install --name thinc-notebook-tests --user
+
+      - name: Install nightly runtime dependencies
+        if: matrix.nightly == 'nightly'
+        run: |
+          pip install --upgrade --pre --extra-index-url https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/ numpy blis
+
+          # TODO this won't be necessary long term after release 3.0.13
+          pip install --upgrade git+https://github.com/explosion/preshed.git@v3.0.x
+
+          # TODO this won't be necessary long term after a free-threading release
+          # TODO merge https://github.com/ultrajson/ultrajson/pull/689
+          # pip install --upgrade git+https://github.com/ultrajson/ultrajson.git
+          pip install --upgrade git+https://github.com/crusaderky/ultrajson.git@free-threading
+
+          # FIXME msgpack-python is not fully compatible with free-threading at the
+          # moment of writing; naive pip install from git tip fails:
+          # https://github.com/msgpack/msgpack-python/issues/613
+
+          # TODO this won't be necessary long term after release 1.0.0
+          # FIXME confection git tip is broken
+          # pip install --upgrade git+https://github.com/explosion/confection.git
+
+          # TODO this won't be necessary long term after release 0.2.1
+          pip install --upgrade git+https://github.com/explosion/ml-datasets
+
+          # TODO this won't be necessary long term after release 3.0
+          # TODO merge https://github.com/explosion/srsly/pull/120
+          # pip install --upgrade git+https://github.com/explosion/srsly.git
+          pip install --upgrade git+https://github.com/crusaderky/srsly.git@ft
 
       - name: List installed packages
         run: python -m pip list
