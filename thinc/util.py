@@ -23,8 +23,6 @@ from typing import (
 )
 
 import numpy
-from packaging.version import Version
-from pydantic import ConfigDict, ValidationError, create_model
 from wasabi import table  # type: ignore
 
 from .compat import (
