@@ -514,6 +514,8 @@ def test_replace_node_with_indirect_node_ref():
     assert a.layers[1].get_ref("y") == y_debug
 
 
+# NumPy >=2.4 issues a warning when unpacking mnist pickle
+@pytest.mark.filterwarnings("ignore::numpy.exceptions.VisibleDeprecationWarning")
 @pytest.mark.xfail(
     platform.system() == "Darwin",
     reason="SSL: CERTIFICATE_VERIFY_FAILED",
