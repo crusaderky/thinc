@@ -1,24 +1,9 @@
-import inspect
-import pickle
-from types import GeneratorType
-from typing import Any, Callable, Dict, Iterable, List, Optional, Union
-
 import catalogue
 import numpy
-import pytest
-
-try:
-    from pydantic.v1 import BaseModel, PositiveInt, StrictBool, StrictFloat, constr
-except ImportError:
-    from pydantic import BaseModel, PositiveInt, StrictBool, StrictFloat, constr  # type: ignore
+from pydantic import BaseModel, StrictBool
 
 import thinc.config
-from thinc.api import Config, Model, NumpyOps, RAdam
-from thinc.config import ConfigValidationError
-from thinc.types import Generator, Ragged
-from thinc.util import partial
-
-from .util import make_tempdir
+from thinc.api import Config, Model, RAdam
 
 EXAMPLE_CONFIG = """
 [optimizer]
@@ -175,11 +160,11 @@ def test_objects_from_config():
     }
 
     @thinc.registry.optimizers.register("my_cool_optimizer.v1")
-    def make_my_optimizer(learn_rate: List[float], beta1: float):
+    def make_my_optimizer(learn_rate: list[float], beta1: float):
         return RAdam(learn_rate, beta1=beta1)
 
     @thinc.registry.schedules("my_cool_repetitive_schedule.v1")
-    def decaying(base_rate: float, repeat: int) -> List[float]:
+    def decaying(base_rate: float, repeat: int) -> list[float]:
         return repeat * [base_rate]
 
     optimizer = my_registry.resolve(config)["optimizer"]

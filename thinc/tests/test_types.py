@@ -1,11 +1,6 @@
 import numpy
 import pytest
-
-try:
-    from pydantic.v1 import ValidationError, create_model
-except ImportError:
-    from pydantic import ValidationError, create_model  # type: ignore
-
+from pydantic import ValidationError, create_model
 
 from thinc.types import (
     Floats1d,
