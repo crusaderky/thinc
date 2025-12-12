@@ -62,11 +62,12 @@ jobs:
           - macos-latest
           - windows-latest
           - windows-11-arm
+        # FIXME Python 3.14 requires confection git tip          
         python_version: ["3.10", "3.11", "3.12", "3.13"]
         nightly: [""]  # Use only official releases
         include:
           - os: ubuntu-latest
-            python_version: "3.13"
+            python_version: "3.14"
             nightly: "nightly"  # Use nightly wheels and git tips
         exclude:
           - os: windows-11-arm
@@ -152,8 +153,7 @@ jobs:
           # https://github.com/msgpack/msgpack-python/issues/613
 
           # TODO this won't be necessary long term after release 1.0.0
-          # FIXME confection git tip is broken
-          # pip install --upgrade git+https://github.com/explosion/confection.git
+          pip install --upgrade git+https://github.com/explosion/confection.git
 
           # TODO this won't be necessary long term after release 0.2.1
           pip install --upgrade git+https://github.com/explosion/ml-datasets
