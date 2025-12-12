@@ -256,6 +256,7 @@ def test_plus_chain():
         assert m.name == "a"
 
 
+@pytest.mark.slow
 def test_overload_operators_in_subthread():
     """Test we can create a model in a child thread with overloaded operators."""
     # Worker1 will start and run, while worker 2 sleeps after Model.define_operators.
@@ -514,11 +515,14 @@ def test_replace_node_with_indirect_node_ref():
     assert a.layers[1].get_ref("y") == y_debug
 
 
+# NumPy >=2.4 issues a warning when unpacking mnist pickle
+@pytest.mark.filterwarnings("ignore::numpy.exceptions.VisibleDeprecationWarning")
 @pytest.mark.xfail(
     platform.system() == "Darwin",
     reason="SSL: CERTIFICATE_VERIFY_FAILED",
     strict=False,  # Works on macos-15-intel Python 3.10, for some reason
 )
+@pytest.mark.slow
 def test_with_debug():
     pytest.importorskip("ml_datasets")
     import ml_datasets

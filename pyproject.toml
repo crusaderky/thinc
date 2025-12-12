@@ -78,4 +78,7 @@ filterwarnings = [
     "ignore:Module thinc was previously imported, but not measured:coverage.exceptions.CoverageWarning",
     # https://github.com/coveragepy/coveragepy/issues/1790
     "ignore:Plugin file tracers:coverage.exceptions.CoverageWarning",
+    # FIXME Pydantic V2 migration
+    "ignore::pydantic.warnings.PydanticDeprecatedSince20",
+    "ignore:Core Pydantic V1 functionality isn't compatible with Python 3.14 or greater:UserWarning",
 ]
