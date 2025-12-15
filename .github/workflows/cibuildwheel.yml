@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build_wheels:
-    uses: explosion/gha-cibuildwheel/.github/workflows/cibuildwheel.yml@main
+    uses: crusaderky/gha-cibuildwheel/.github/workflows/cibuildwheel.yml@nightly
     permissions:
       contents: write
       actions: read
