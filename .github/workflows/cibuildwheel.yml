@@ -22,6 +22,8 @@ jobs:
     with:
       wheel-name-pattern: "thinc-*.whl"
       pure-python: false
-      create-release: ${{ startsWith(github.ref, 'refs/tags/release-') || startsWith(github.ref, 'refs/tags/prerelease-') }}
+      create-release: ${{ startsWith(github.ref, 'refs/tags/release-') || startsWith(github.ref, 'refs/tags/prerelease-') && github.repository_owner == 'explosion' }}
+      nightly-upload: ${{ github.event_name == 'workflow_dispatch' && github.repository_owner == 'explosion' && github.ref == 'refs/heads/v8.3.x' }}
     secrets:
       gh-token: ${{ secrets.GITHUB_TOKEN }}
+      anaconda_nightly_upload_token: ${{ secrets.ANACONDA_ORG_UPLOAD_TOKEN }}
